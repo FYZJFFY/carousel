@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>无缝轮播</title>
+    <style>
+        .windows {
+            width: 800px;
+            height: 600px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .windows .images img {
+            position: absolute;
+            transition: transform 1s;
+        }
+
+
+
+        .current {
+            transform: translateX(0);
+            z-index: 9;
+        }
+
+        .leave {
+            transform: translateX(-100%);
+            z-index: 1;
+        }
+
+        .next {
+            transform: translateX(100%);
+            z-index: 1;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="windows">
+        <div class="images">
+            <img class="current" src="images/1.jpg" alt="图片1">
+            <img class="next" src="images/2.jpg" alt="图片2">
+            <img class="next" src="images/3.jpg" alt="图片3">
+        </div>
+    </div>
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script>
+        let n = 1;
+        var length = $(".images img").length;
+        setInterval(() => {
+            makeLeave(getImg(n)).one("transitionend", function () {
+                makeNext($(this));
+            });
+            makeCurrent(getImg(n + 1));
+            n++;
+        }, 4000);
+
+        // function getN(n) {
+        //     var result = n % length;
+        //     if (result == 0) {
+        //         result = 1;
+        //     }
+        //     return result;
+        // }
+
+        function getN(n) {
+            if (n > length) {
+                n = n % length;
+                if (n === 0) {
+                    n = length
+                }
+            } // n = 1 2 3
+            return n
+        }
+
+        function getImg(n) {
+            return $(".images img:nth-child(" + getN(n) + ")");
+        }
+
+        function makeLeave(node) {
+            node.addClass("leave").removeClass("current next");
+            return node;
+        }
+
+        function makeNext(node) {
+            node.addClass("next").removeClass("leave current");
+            return node;
+        }
+
+        function makeCurrent(node) {
+            node.addClass("current").removeClass("next leave");
+            return node;
+        }
+
+        // setTimeout(function(){
+        //     $(".images img:nth-child(1)").css({
+        //         transform: 'translateX(-100%)'
+        //     }).one("transitionend",function(){
+        //         $(this).css({
+        //             transform: 'translateX(100%)'
+        //         });
+        //     });;
+        //     $(".images img:nth-child(2)").css({
+        //         transform: 'translateX(0%)',
+        //     })
+        // },3000);
+
+        // setTimeout(function(){
+        //     $(".images img:nth-child(2)").css({
+        //         transform: 'translateX(-100%)'
+        //     }).one("transitionend",function(){
+        //         $(this).css({
+        //             transform: 'translateX(100%)'
+        //         });
+        //     });;
+        //     $(".images img:nth-child(3)").css({
+        //         transform: 'translateX(0%)',
+        //     })
+        // },6000);
+
+        // setTimeout(function(){
+        //     $(".images img:nth-child(3)").css({
+        //         transform: 'translateX(-100%)'
+        //     }).one("transitionend",function(){
+        //         $(this).css({
+        //             transform: 'translateX(100%)'
+        //         });
+        //     });;
+        //     $(".images img:nth-child(1)").css({
+        //         transform: 'translateX(0%)',
+        //     })
+        // },9000);
+
+        // setTimeout(function(){
+        //     $(".images img:nth-child(1)").css({
+        //         transform: 'translateX(-100%)'
+        //     }).one("transitionend",function(){
+        //         $(this).css({
+        //             transform: 'translateX(100%)'
+        //         });
+        //     });;
+        //     $(".images img:nth-child(3)").css({
+        //         transform: 'translateX(0%)',
+        //     })
+        // },12000);
+    </script>
+</body>
+
+</html>
