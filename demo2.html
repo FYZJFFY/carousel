@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>无缝轮播改进版--可以指定页切换</title>
+    <style>
+        .windows {
+            width: 600px;
+            height: 450px;
+            overflow: hidden;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .windows .images img {
+            width: 100%;
+        }
+
+        .windows .images {
+            display: flex;
+            transition: transform 1s;
+            height: 100%;
+
+        }
+
+        .clear-fix:after {
+            clear: both;
+            content: "";
+            display: block;
+        }
+
+        .btns {
+            text-align: center;
+            margin-top: 10px;
+            cursor: pointer
+        }
+
+        .btns .page {
+            padding: 15px;
+        }
+
+        .cur {
+            color: red;
+        }
+
+        .changelogo {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+        }
+
+        .changelogo .next {
+            position: absolute;
+            top: 200px;
+            right: 50px;
+            font-size: 40px;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        .changelogo .prev {
+            position: absolute;
+            top: 200px;
+            left: 50px;
+            font-size: 40px;
+            color: #fff;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="windows">
+            <div class="images">
+                <img src="images/1.jpg" alt="图片1">
+                <img src="images/2.jpg" alt="图片2">
+                <img src="images/3.jpg" alt="图片3">
+            </div>
+            <div class="changelogo">
+                <span class="prev">
+                    &lt;
+                </span>
+                <span class="next">
+                    &gt;
+                </span>
+            </div>
+        </div>
+        <div class="btns">
+            <span class="page cur">1</span>
+            <span class="page">2</span>
+            <span class="page">3</span>
+        </div>
+
+    </div>
+
+    <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+    <script>
+        var $imgs = $(".images img");
+        var $slides = $(".images");
+        var firstNodeCopy = $imgs.eq(0).clone(true);
+        var lastNodeCopy = $imgs.eq($imgs.length - 1).clone(true);
+        var $btns = $(".btns .page");
+        var current = 0;
+        $slides.prepend(lastNodeCopy);
+        $slides.append(firstNodeCopy);
+
+        $slides.css({
+            "transform": "translateX(-600px)"
+        });
+        var btnLength = $btns.length;
+        $(".btns").on("click", "span", function () {
+            var index = $(this).index();
+            gotoSlide(index);
+
+        });
+        let timer = setInterval(function () {
+            gotoSlide(current + 1)
+        }, 2000)
+
+        $(".prev").on("click", function () {
+            gotoSlide(current - 1);
+        });
+        $(".next").on("click", function () {
+            gotoSlide(current + 1);
+        });
+        $('.container').on('mouseenter', function () {
+            window.clearInterval(timer)
+        }).on('mouseleave', function () {
+            timer = setInterval(function () {
+                gotoSlide(current + 1)
+            }, 2000)
+        })
+
+        function gotoSlide(index) {
+            if (index > btnLength - 1) {
+                index = 0;
+            } else if (index < 0) {
+                index = btnLength - 1;
+            }
+            $btns.eq(index).addClass("cur").siblings().removeClass("cur");
+            if (index == 0 && current == btnLength - 1) {
+                $slides.css({
+                    "transform": `translateX(${-(btnLength+1)*600}px)`
+                }).one("transitionend", function () {
+                    $slides.hide().offset()
+                    $slides.css({
+                        transform: `translateX(-600px)`
+                    }).show()
+                });
+            } else if (index == btnLength - 1 && current == 0) {
+                $slides.css({
+                    "transform": "translateX(0px)"
+                }).one("transitionend", function () {
+                    $slides.hide().offset()
+                    $slides.css({
+                        transform: `translateX(${-(index+1)*600}px)`
+                    }).show()
+                });
+            } else {
+                $slides.css({
+                    "transform": `translateX(${-(index+1)*600}px)`
+                });
+            }
+
+            current = index;
+        }
+
+
+
+
+
+        // $btns.eq(0).on("click", function () {
+        //     if (current == 2) {
+        //         $slides.css({
+        //             "transform": "translateX(-2400px)"
+        //         }).one("transitionend", function () {
+        //             $slides.hide().offset()
+        //             $slides.css({
+        //                 transform: `translateX(-600px)`
+        //             }).show()
+        //         });
+        //     } else {
+        //         $slides.css({
+        //             "transform": "translateX(-600px)"
+        //         });
+        //     }
+        //     current = 0;
+        // });
+        // $btns.eq(1).on("click", function () {
+        //     $slides.css({
+        //         "transform": "translateX(-1200px)"
+        //     });
+        //     current = 1;
+        // });
+        // $btns.eq(2).on("click", function () {
+        //     if (current == 0) {
+        //         $slides.css({
+        //             "transform": "translateX(0px)"
+        //         }).one("transitionend", function () {
+        //             $slides.hide().offset()
+        //             $slides.css({
+        //                 transform: `translateX(-1800px)`
+        //             }).show()
+        //         });
+        //     } else {
+        //         $slides.css({
+        //             "transform": "translateX(-1800px)"
+        //         });
+        //     }
+        //     current = 2;
+        // });
+    </script>
+</body>
+
+</html>
